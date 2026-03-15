@@ -1,5 +1,5 @@
-📘 Employee Service – Spring Boot + Redis Caching
-📌 Project Overview
+Employee Service – Spring Boot + Redis Caching
+Overview
 
 This project is a Spring Boot Employee Management Service.
 
@@ -9,9 +9,12 @@ When someone calls the API:
 
 First time → Data comes from MySQL Database
 
-Second time → Data comes from Redis Cache (faster 🚀)
+Second time → Data comes from Redis Cache (much faster 🚀)
 
-🛠 Technologies Used
+This helps reduce database load and improves application performance.
+
+Technologies Used
+Backend
 
 Java 17
 
@@ -19,129 +22,148 @@ Spring Boot
 
 Spring Data JPA
 
+Database
+
 MySQL
+
+Caching
 
 Redis
 
 Spring Cache
 
+Other Tools
+
 ModelMapper
 
 Lombok
 
-Docker (Optional for Redis)
+Docker (optional for Redis)
 
-🧑‍💼 What This Project Does?
+What This Project Does
 
-This project provides:
+This project provides the following APIs:
 
-✅ Create Employee
-✅ Get Employee by ID
-✅ Get All Employees (Pagination + Sorting)
-✅ Update Employee
-✅ Soft Delete Employee
-✅ Redis Caching
+Create Employee
 
-🔥 What is Redis?
-📌 Redis Definition 
+Get Employee by ID
+
+Get All Employees (Pagination + Sorting)
+
+Update Employee
+
+Soft Delete Employee
+
+Redis Caching
+
+What is Redis?
 
 Redis is an in-memory database.
 
-It stores data in RAM, not on disk.
+It stores data in RAM instead of disk, which makes it extremely fast.
 
-Because of this:
+Redis is commonly used for:
 
-It is very fast
+Caching
 
-It is used for caching
+Session storage
 
-It reduces database load
+Real-time analytics
 
-🎯 Why Redis is Used in This Project?
+Message queues
+
+Why Redis is Used in This Project
 
 Without Redis:
 
 Every request goes to MySQL
 
-Database becomes slow under heavy load
+Database load increases
+
+Application becomes slower
 
 With Redis:
 
 First request → MySQL
+Next requests → Redis
 
-Next request → Redis
+Result:
 
-Faster response
+Faster response time
 
-Better performance
+Reduced database load
 
-🧠 Where Redis is Used in This Project?
+Better application performance
 
-In EmployeeServiceImpl.java
+Where Redis is Used in This Project
 
+Redis caching is implemented inside:
+
+EmployeeServiceImpl.java
+
+Using Spring Cache annotations:
+
+Cacheable
 @Cacheable(value = "employeeCache", key = "#employeeId")
+
+Stores employee data in Redis when fetching from the database.
+
+CachePut
 @CachePut(value = "employeeCache", key = "#result.id")
+
+Updates Redis cache when employee data is updated.
+
+CacheEvict
 @CacheEvict(value = "employeeCache", key = "#employeeId")
-✅ @Cacheable
 
-Stores data in Redis when fetching employee.
+Removes employee data from Redis when the employee is deleted.
 
-✅ @CachePut
+Database Used
 
-Updates cache when updating employee.
+This project uses MySQL Database.
 
-✅ @CacheEvict
-
-Removes cache when deleting employee.
-
-🗄 Database Used
-
-MySQL Database:
+Example configuration:
 
 Database Name: employee_db
 Port: 3306
-⚙️ Application Properties (Without Docker)
 
-If Redis is installed normally on your system:
+Redis Configuration
 
-# Redis Configuration
+Redis configuration is defined in:
+
+application.properties
+
+Example configuration:
+
 spring.cache.type=redis
 spring.data.redis.host=localhost
 spring.data.redis.port=6379
-🐳 Install Redis Using Docker
-Step 1: Install Docker
+Install Redis Using Docker
+Step 1 – Install Docker
 
-Download Docker Desktop and install it.
+Download and install Docker Desktop.
 
-Step 2: Pull Redis Image
+Step 2 – Pull Redis Image
 docker pull redis
-Step 3: Run Redis Container
+Step 3 – Run Redis Container
 docker run --name my-redis -p 6379:6379 -d redis
-Step 4: Check Container
+Step 4 – Check Running Containers
 docker ps
 
 You should see Redis running.
 
-📄 application.properties (With Docker)
+Install Redis Without Docker (Manual)
 
-If using Docker:
+For Linux or WSL:
 
-spring.cache.type=redis
-spring.data.redis.host=localhost
-spring.data.redis.port=6379
-
-⚠️ Configuration is same because Docker maps port 6379 to localhost.
-
-💻 Install Redis Without Docker (Manual Install)
-🪟 For Windows (Using WSL Recommended)
-Step 1: Install Redis
+Step 1 – Install Redis
 sudo apt update
 sudo apt install redis-server
-Step 2: Start Redis
+Step 2 – Start Redis
 redis-server
-Step 3: Test Redis
+Step 3 – Test Redis
 
-Open new terminal:
+Open a new terminal:
 
 redis-cli
 
@@ -149,99 +171,137 @@ Then type:
 
 ping
 
-If it returns:
+If Redis is working correctly, it will return:
 
 PONG
-
-Redis is working ✅
-
-📂 Project Structure
+Project Structure
 employee-service
- ├── controller
- ├── service
- ├── repository
- ├── entity
- ├── dto
- ├── exception
- └── application.properties
-🧱 Main Components Explanation
-🧑‍💼 Employee Entity
 
-Represents employee table in MySQL.
+controller
+   EmployeeController
 
-📦 EmployeeRepository
+service
+   EmployeeService
+   EmployeeServiceImpl
 
-Extends JPA Repository for DB operations.
+repository
+   EmployeeRepository
 
-🔄 EmployeeService
+entity
+   Employee
+
+dto
+   EmployeeRequest
+   EmployeeResponse
+
+exception
+   GlobalExceptionHandler
+
+resources
+   application.properties
+Main Components Explanation
+Employee Entity
+
+Represents the employee table in MySQL database.
+
+EmployeeRepository
+
+Handles database operations using Spring Data JPA.
+
+EmployeeService
 
 Contains business logic and caching logic.
 
-🌍 EmployeeController
+EmployeeController
 
-Handles REST APIs.
+Handles REST API requests.
 
-⚠️ GlobalExceptionHandler
+GlobalExceptionHandler
 
-Handles errors globally.
+Handles application errors globally.
 
-🚀 How Caching Works in This Project
+How Caching Works in This Project
+
 First API Call:
 
-Data fetched from MySQL
+Data is fetched from MySQL
 
-Stored in Redis
+Stored in Redis Cache
 
 Returned to client
 
 Second API Call:
 
-Data fetched from Redis
+Data is fetched directly from Redis
 
-Faster response
+Response is much faster
 
-MySQL not used
+MySQL is not accessed
 
-📡 API Example
+API Example
 Get Employee By ID
 GET http://localhost:8083/employees/1
-🏁 How to Run Project
-Step 1:
+Running the Project
+Prerequisites
 
-Start MySQL
+You need:
 
-Step 2:
+Java 17+
 
-Start Redis (Docker or Manual)
+Maven
 
-Step 3:
+MySQL
 
-Run Spring Boot
+Redis
+
+Step 1
+
+Start MySQL database
+
+Step 2
+
+Start Redis
+
+Using Docker or manual installation.
+
+Step 3
+
+Run the Spring Boot application
 
 mvn spring-boot:run
+Step 4
 
-Server runs on:
+Server will start on:
 
 http://localhost:8083
-🎯 Benefits of This Project
+Benefits of This Project
 
-✅ Faster performance using Redis
-✅ Reduced database load
-✅ Clean layered architecture
-✅ Pagination & Sorting
-✅ Soft delete support
-✅ Proper exception handling
+Faster performance using Redis caching
 
-📌 Conclusion
+Reduced database load
 
-This is a Spring Boot Employee Management System with:
+Clean layered architecture
 
-MySQL database
+Pagination and sorting support
 
-Redis caching
+Soft delete implementation
 
-Docker support
+Proper exception handling
 
-Clean architecture
+What You Learn From This Project
 
-Redis improves performance by storing frequently accessed data in memory.
+From this project you will learn:
+
+How to use Redis caching in Spring Boot
+
+How Spring Cache works
+
+How to improve API performance
+
+How to build scalable backend services
+
+Summary
+
+This project demonstrates how to build a Spring Boot Employee Management System with Redis caching.
+
+Redis improves performance by storing frequently accessed data in memory, which reduces database queries and makes the application faster.
